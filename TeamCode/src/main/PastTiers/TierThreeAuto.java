@@ -63,7 +63,7 @@ public class TierThreeAuto extends LinearOpMode {
     static final double COUNTS_PER_MOTOR_REV = 746.6;
     static final double WHEEL_DIAMETER = 10.16;
     static final double Counts_PER_CM = COUNTS_PER_MOTOR_REV/(WHEEL_DIAMETER * 3.1415);
-//This is a test
+
     //Gyro setup
     BNO055IMU imu;
     Orientation angles;
@@ -104,7 +104,7 @@ public class TierThreeAuto extends LinearOpMode {
         waitForStart();
 
         //Movement
-        ColourGyroDrive(0.2,150,0);
+        ColourGyroDrive(0.5,70,0);
 
     }
     private void ColourGyroDrive(double power, double distanceCM, double angle) {

@@ -33,6 +33,8 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -54,17 +56,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TierOne_LJ", group="Linear Opmode")
+@TeleOp(name="TierFourTeleop", group="Linear Opmode")
 
 public class TierFourTeleop extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
     // Drive Train
-    private DcMotor leftDrive1 = null;
-    private DcMotor rightDrive1 = null;
-    private DcMotor leftDrive2 = null;
-    private DcMotor rightDrive2 = null;
+    private DcMotor     leftDrive1 = null;
+    private DcMotor     rightDrive1 = null;
+    private DcMotor     leftDrive2 = null;
+    private DcMotor     rightDrive2 = null;
+    private DcMotor     armmotor = null;
+    Servo claw = null;
 
     //Encoder setup
     public static double    kp = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7; //0.04
@@ -84,16 +88,18 @@ public class TierFourTeleop extends LinearOpMode {
         telemetry.update();
 
         //Drive Train
-        leftDrive1  = hardwareMap.get(DcMotor.class, "left_drive1");
-        rightDrive1 = hardwareMap.get(DcMotor.class, "right_drive1");
-        leftDrive2  = hardwareMap.get(DcMotor.class, "left_drive2");
-        rightDrive2 = hardwareMap.get(DcMotor.class, "right_drive2");
+        leftDrive1  = hardwareMap.get(DcMotor.class, "left1");
+        rightDrive1 = hardwareMap.get(DcMotor.class, "right1");
+        leftDrive2  = hardwareMap.get(DcMotor.class, "left2");
+        rightDrive2 = hardwareMap.get(DcMotor.class, "right2");
 
-        leftDrive1.setDirection(DcMotor.Direction.FORWARD);
+        leftDrive1.setDirection(DcMotor.Direction.FORWARD );
         rightDrive2.setDirection(DcMotor.Direction.REVERSE);
         leftDrive2.setDirection(DcMotor.Direction.FORWARD);
         rightDrive1.setDirection(DcMotor.Direction.REVERSE);
 
+        armmotor = hardwareMap.get(DcMotor.class, "arm");
+        claw = hardwareMap.get(Servo.class,"claw");
 
         waitForStart();
         runtime.reset();
@@ -114,8 +120,14 @@ public class TierFourTeleop extends LinearOpMode {
             leftDrive2.setPower(leftPower);
             rightDrive2.setPower(rightPower);
 
-            if (gamepad1.a){
-
+            if (gamepad2.y){
+                armmotor.setPower(0.3); //Goes down
+            }
+            else if (gamepad2.a) {
+                armmotor.setPower(-0.3); //Goes up
+            }
+            else{
+                armmotor.setPower(0);
             }
         }
     }

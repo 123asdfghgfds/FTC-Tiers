@@ -104,7 +104,7 @@ public class TierThreeAuto extends LinearOpMode {
         waitForStart();
 
         //Movement
-        ColourGyroDrive(0.5,70,0);
+        ColourGyroDrive(0.2,150,0);
 
     }
     private void ColourGyroDrive(double power, double distanceCM, double angle) {

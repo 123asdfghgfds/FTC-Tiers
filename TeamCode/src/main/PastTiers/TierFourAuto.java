@@ -36,12 +36,15 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 @Autonomous(name="TierFourAuto", group="Linear Opmode")
@@ -57,9 +60,14 @@ public class TierFourAuto extends LinearOpMode {
     private DcMotor     rightDrive2 = null;
     private DcMotorEx   shootermotor = null;
     private DcMotor     feedermotor = null;
+    private DcMotor     armmotor = null;
+    Servo claw = null;
+
+    private DistanceSensor sensorTop;
+    private DistanceSensor sensorBottom;
 
     //Encoder setup
-    public static double    kp = 0.00202674492; // kp=1/(704.86*constant) = constant = 0.7; //0.04
+    public static double    kp = 0.003; // kp=1/(704.86*constant) = constant = 0.7; //0.04
     public static double    kp2 = 0.004;
 
     static final double     COUNTS_PER_MOTOR_REV = 746.6;
@@ -73,6 +81,9 @@ public class TierFourAuto extends LinearOpMode {
     Orientation last_angle = new Orientation();
     double angle;
 
+    //Other Variables
+    public int ringsCount = 0;
+
     @Override
     public void runOpMode() throws InterruptedException {
 
@@ -84,7 +95,7 @@ public class TierFourAuto extends LinearOpMode {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        //Mapping
+        //Drive
         leftDrive1  = hardwareMap.get(DcMotor.class, "left1");
         rightDrive1 = hardwareMap.get(DcMotor.class, "right1");
         leftDrive2  = hardwareMap.get(DcMotor.class, "left2");
@@ -101,8 +112,14 @@ public class TierFourAuto extends LinearOpMode {
         rightDrive2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //Motors
-        //shootermotor = hardwareMap.get(DcMotorEx.class, "shooter");
-        //feedermotor = hardwareMap.get(DcMotor.class, "feeder");
+        shootermotor = hardwareMap.get(DcMotorEx.class, "shooter");
+        feedermotor = hardwareMap.get(DcMotor.class, "feeder");
+        armmotor = hardwareMap.get(DcMotor.class, "arm");
+        claw = hardwareMap.get(Servo.class,"claw");
+
+        //Sensors
+        sensorBottom = hardwareMap.get(DistanceSensor.class, "bottomDistance");
+        sensorTop = hardwareMap.get(DistanceSensor.class, "topDistance");
 
         //Pregame setup
         resetEncoders();
@@ -111,15 +128,41 @@ public class TierFourAuto extends LinearOpMode {
         telemetry.update();
         waitForStart();
 
-        //Movement
-        //PGyroDrive(0.3, -165, 0);
-        gyroStrafe(0.2, 100, 0);
-        gyroStrafe(0.2, -100, 0);
-        //gyroStrafe(0.8,150,0);
-        //sleep(2000);
-        //gyroStrafe(0.8,-150,0);
+        //Ring Detection
+        PGyroDrive(0.3, -85, 0);
+        gyroStrafe(0.2,-17,0);
 
-        //AutoShoot();
+        if (sensorTop.getDistance(DistanceUnit.CM) < 10){
+            ringsCount = 4;
+        }
+        else if (sensorBottom.getDistance(DistanceUnit.CM) < 10) {
+            ringsCount = 1;
+        }
+        else {
+            ringsCount = 0;
+        }
+
+        if (ringsCount == 4){
+            gyroStrafe(0.2,17,0);
+            resetEncoders();
+            PGyroDrive(0.3,-210,0);
+            PGyroDrive(0.3, 125,0);
+            gyroStrafe(0.2,-50,0);
+            //AutoShoot();
+        }
+        else if (ringsCount == 1){
+            gyroStrafe(0.2,17,0);
+            resetEncoders();
+            PGyroDrive(0.3,-85,0);
+            gyroStrafe(0.2,-50,0);
+        }
+        else{
+            gyroStrafe(0.2,17,0);
+            resetEncoders();
+            PGyroDrive(0.3,-85,0);
+            gyroStrafe(0.2,-50,0);
+            //AutoShoot();
+        }
     }
 
     private void gyroStrafe(double speed, double distance, double angle) {
@@ -208,13 +251,8 @@ public class TierFourAuto extends LinearOpMode {
 
                 rightDrive1.setPower(right1Speed);
                 rightDrive2.setPower(right2Speed);
-
-                telemetry.update();
-
             }
 
-            // Stop all motion;
-           motorStop();
         }
     }
     private void PGyroDrive(double power, double distanceCM, double angle) {
@@ -275,7 +313,6 @@ public class TierFourAuto extends LinearOpMode {
 
             motorSet(leftSpeed, rightSpeed);
         }
-        motorStop();
     }
     private void AutoShoot() {
         runtime.reset();

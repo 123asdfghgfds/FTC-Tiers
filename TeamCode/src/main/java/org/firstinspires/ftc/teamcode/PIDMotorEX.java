@@ -62,7 +62,7 @@ public class PIDMotorEX extends LinearOpMode {
     PIDFCoefficients pidOrig,currentPID;
 
     //Encoder setup
-    static final double     COUNTS_PER_MOTOR_REV    =  704.86 ;
+    static final double     COUNTS_PER_MOTOR_REV    = 704.86 ;
     static final double     DRIVE_GEAR_REDUCTION    = 1 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -118,9 +118,9 @@ public class PIDMotorEX extends LinearOpMode {
         waitForStart();
 
         //Movement
-        PIDDriveEX(0.5,100,0);
+        PIDDriveEX(0.5,48,0);
     }
-    private void PIDDriveEX(double power, double distanceCM, double angle) {
+    private void PIDDriveEX(double power, double distance, double angle) {
 
         //Declare Variables
         int     newLeftTarget;
@@ -134,7 +134,7 @@ public class PIDMotorEX extends LinearOpMode {
         adjustment = 0.03;
 
         //Reduce Error
-        moveCounts = (int)(distanceCM * COUNTS_PER_INCH);
+        moveCounts = (int)(distance * COUNTS_PER_INCH);
         newLeftTarget = left1.getCurrentPosition() + moveCounts;
         newRightTarget = right1.getCurrentPosition() + moveCounts;
 

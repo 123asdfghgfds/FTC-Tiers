@@ -36,18 +36,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
-//Gyro
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-//PID
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
-@Autonomous(name="TierThreeAuto", group="Linear Opmode")
+@Autonomous(name="PIDMotorEX", group="Linear Opmode")
 
 public class PIDMotorEX extends LinearOpMode {
 
@@ -58,7 +56,7 @@ public class PIDMotorEX extends LinearOpMode {
     private DcMotorEx right2 = null;
 
     //PID
-    public static PIDFCoefficients DrivetrainPID = new PIDFCoefficients(25,0.05,1.25,0);
+    public static PIDFCoefficients DrivetrainPID = new PIDFCoefficients(40,0.05,1.7,0);
     PIDFCoefficients pidOrig,currentPID;
 
     //Encoder setup
